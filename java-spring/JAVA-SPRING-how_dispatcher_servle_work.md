@@ -92,6 +92,70 @@ _e.g. `web.xml`_
 > - 디스패처 서블릿은 서블릿 컨테이너(Servlet Container)내에 생성되기 때문에 스프링 컨테이너(Spring Container)에 직접 DI를 받는게 아니다.
 > - 디스패처 서블릿이 생성될 때, `Servlet WebApplication Context`를 생성하고 연결해, DI를 받지 않지만 받는 것처럼 동작한다.
 
+#### HandlerMapping과 HandlerAdapter
+  
+- `HandlerMapping`
+  - 개념
+    - 실제 URL 경로와 Handler를 연결하는 역할을 합니다.
+    - `HandlerMapping`은 interface이고, 이를 구현하는 여러개의 구현체가 있습니다.
+
+    ```java
+    public interface HandlerMapping {
+        /**
+         * @param request: 요청
+         * @return 요청을 처리할 Controller와 요청 전/후로 실행되는 Interceptor의 내용을 포함한 HandlerExecutionChain
+         */
+        HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception;
+    }
+    ```
+
+  - 종류(대표적인 2가지만 소개)
+    - `RequestMappingHandlerMapping`
+      - `@RequestMapping`을 통해 매핑한 메서드들을 처리
+      - 주로 SpringMVC에서 사용
+    - `SimpleUrlHandlerMapping`
+      - XML 설정이나 자바 설정을 통해 매핑한 내용을 처리
+      - 주로 정적 리소스 처리에 사용
+  - `AbstractHandlerMapping`
+    - `HandlerMapping`의 구현체의 기본 틀을 제공(e.g. 매핑에 대한 핸들러를 찾는 메서드)
+    - `HandlerMapping`은 이를 상속받아 구현
+
+- `HandlerAdapter`
+  - 개념
+    - 실제 컨트롤러를 호출(실행)하는 역할을 합니다.
+    - `HandlerAdapter`은 interface이고, 이를 구현하는 여러개의 구현체가 있습니다.
+
+    ```java
+    public interface HandlerAdapter {
+        /**
+         * @param handler: 핸들러
+         * @return 해당 핸들러를 지원하는 어댑처인지의 여부
+         */
+        boolean supports(Object handler);
+        
+        /**
+         * @param request: 요청
+         * @param response: 응답
+         * @param handler: 핸들러
+         * @return ModelAndView 
+         */
+        ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception;
+        
+        Long getLastModified(HttpServletRequest request, Object handler);
+    }
+    ```
+
+  - 종류
+    - `RequestMappingHandlerAdapter`: `@RequestMapping`으로 매핑된 메서드를 실행
+    - `HttpRequestHandlerAdapter`: `HttpRequestHandler` 인터페이스를 구현한 핸들러를 실행
+    - `SimpleControllerHandlerAdapter`: `Controller` 인터페이스를 구현한 핸들러를 실행
+
+- `HandlerMapping`과 `HandlerAdapter`의 관계
+  - 매핑과 핸들러는 직접적으로 연결된 것이 아니라 독립적으로 존재합니다.
+  - 다양한 종류의 컨트롤러를 지원하고 확장 가능하게 하기 위해 매핑과 핸드럴를 나눠서 관리합니다.
+    - 컨트롤러의 종류가 추가되면, 추가된 컨트롤러의 종류에 맞춰 `HandlerAdapter`를 구현합니다.
+    - 매핑 방식이 추가되면, 추가된 매핑 방식에 맞춰 `HandlerMapping`를 구현합니다.
+  
 ### 3. 컨트롤러의 모델 생성과 정보 등록
 
 1. 사용자 요청을 해석
@@ -106,6 +170,10 @@ _e.g. `web.xml`_
 작업을 위임받은 컨트롤러가 모델과 뷰를 리턴할 때, `ModelAndView`라는 오브젝트로 주게된다.
 
 작업을 위임받았던 컨트롤러는 이 객체를 리턴해주며 작업이 끝난다.
+
+> Springboot에서 `ModelAndView`
+>
+> `Controller`에서 논리적인 View의 이름만 리턴해도, Springboot에서 `ModelAndView`를 생성해 `DispatcherServlet`에게 전달
 
 ### 5. DispatcherServlet의 뷰 호출
 
@@ -297,6 +365,13 @@ _e.g. `web.xml`_
   - 혹시 알 수 있다고 해도, 서로 다른 컨테이너에서 관리되기 때문에 직접 호출할 방법이 없다.
 
   - 이를 `HandlerAdapter`가 컨트롤러를 호출하는 방법을 캡슐화하여 `DispatcherServlet`이 컨트롤러를 직접 호출하지 않고도 작업을 위임할 수 있도록 해주어서 해결한다.
+  
+  > - `HandlerAdapter`는 Spring Context에 포함되어있다.
+  > - DispatcherServlet이 초기화 될 떄 이 Spring Context와 연결되고, Spring Context내에 있는 HandlerAdapter빈을 모두 가져와 내부 필드에 저장해 직접 호출할 수 있는 구조가 된다.
+  > - 분리한 이유
+  >   - SpringMVC는 다양한 형태의 컨트롤러(`@Controller` 기반, `Contrller`인터페이스 구현, `HttpRequestHandler`인터페이스 구현 등)를 지원하는데, 이에 대한 처리를 분리하기 위해
+  >   - 유연한 구조 유지: 다른 핸들러가 추가 되어도 어댑터만 추가하면 되서
+  >   - SRP(단일 책임 원칙)준수: 요청의 처리에 대한 책임만 가지고, 핸들러 호출과 실행등은 분리
 
 - `DispatcherServlet`이 항상 같은 방식으로 작업을 위임하고, 같은 형식의 결과를 받을 수 있도록 해준다.
 
@@ -356,6 +431,8 @@ _e.g. `web.xml`_
 
 - 리다이렉트(redirect) 간에 데이터를 전달하는 역할이다.
 - 리다이렉트 후에 데이터를 유지할 때 사용된다.
+
+# 정리
 
 ### 출처
 
