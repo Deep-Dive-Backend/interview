@@ -37,7 +37,6 @@
 ### 디스패처 서블릿의 구조
 
 ![컨텍스트 간의 관계를 시각화](/java-spring/img/JAVA-SPRING-how_dispatcher_servle_work_dispatcher_servlet_architecher.png)
-
 _컨텍스트 간의 관계를 시각화, 출처: [spring docs- DispatcherServlet](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet.html)_
 
 
@@ -54,7 +53,6 @@ _컨텍스트 간의 관계를 시각화, 출처: [spring docs- DispatcherServle
 
 ## 디스패처 서블릿의 요청 흐름
 ![디스패처 서블릿의 요청 흐름](/java-spring/img/JAVA-SPRING-how_dispatcher_servle_work_dispatcher_flow.png)
-
 _디스패처 서블릿의 요청 흐름, 출처: [도서 - 토비의 스프링 3.1 vol.2](http://www.acornpub.co.kr/book/toby-spring3-1-vol2)_
 
 ### 1. DispatcherServlet의 HTTP 요청 접수
@@ -79,8 +77,7 @@ _web.xml_
 
 2. `HandlerAdapter`를 이용해 위임할 컨트롤러에게 요청 작업을 전달한다.
 
-![어댑터를 이용한 임의의 컨트롤러 호출 방식](/java-spring/img/JAVA-SPRING-how_dispatcher_servle_work_dispatcher_flow_handler_adapter.png)
-
+![어댑터를 이용한 임의의 컨트롤러 호출 방식](image.png)
 _어댑터를 이용한 임의의 컨트롤러 호출 방식, 출처: [도서 - 토비의 스프링 3.1 vol.2](http://www.acornpub.co.kr/book/toby-spring3-1-vol2)_
 
 - 어댑터 패턴을 이용해 디스패처 서블릿은 항상 일정한 방식으로 컨트롤러를 호출하고 결과를 받을 수 있다.
