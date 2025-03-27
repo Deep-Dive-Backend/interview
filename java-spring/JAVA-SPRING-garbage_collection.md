@@ -80,3 +80,9 @@ Heap Area 구조<br>
   - 자바9버전부터의 default GC로 메모리와 CPU를 많이 차지하는 CMS GC 문제점을 개선한 방식
   - 큰 메모리에서 상용하기 적합한 GC(대규모 Heap 사이즈에서 짧은 GC시간을 보장하는데 목적을 둠)
   - 전체 Heap 영역을 Region이라는 영역으로 분할하여 상황에 따라 역할이 동적으로 부여됨
+
+
+
+https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/index.html
+https://d2.naver.com/helloworld/1329
+https://www.youtube.com/watch?v=jXF4qbZQnBc&t=1202s
