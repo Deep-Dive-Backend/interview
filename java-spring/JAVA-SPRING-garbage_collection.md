@@ -39,25 +39,26 @@ GC는 하단의 두 가지 가설(전제 조건)로 인해 만들어졌다
 
 ## GC Process
 Heap Area 구조<br>
-![image](https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/images/gcslides/Slide5.png)
+![image](/java-spring/img/JAVA-SPRING-garbage_collection_heap_area.PNG)
+
 
 ### Young Generation의 구성
 - Eden 영역
 - Survivor 영역(2개)
 
 ### 일반적인 GC의 과정
-1. 새로운 객체가 Eden 영역에 생성
-![image](https://velog.velcdn.com/images%2Fprayme%2Fpost%2F5d4f835c-b4c8-4525-861e-87b10620f1c1%2Fimage.png)
-2. Eden 영역이 가득차면 Minor GC가 발생
-![image](https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/images/gcslides/Slide14.png)<br>
+1. 새로운 객체가 Eden 영역에 생성<br>
+![image](/java-spring/img/JAVA-SPRING-garbage_collection_process_3.PNG)<br>
+2. Eden 영역이 가득차면 Minor GC가 발생<br>
+![image](/java-spring/img/JAVA-SPRING-garbage_collection_process_4.PNG)<br>
 3. 아직 사용되고 있는 객체는 Survivor1영역 혹은 Survivor2 영역으로 이동시킴 <br>
-![image](https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/images/gcslides/Slide6.png)<br>
+![image](/java-spring/img/JAVA-SPRING-garbage_collection_process_5.PNG)<br>
 단, 객체의 크기가 Survivor 영역의 크기보다 클 경우에는 바로 Old Generation으로 이동
 4. 운영 특성 상, Survivor1과 Survivor2 영역은 둘 중 한곳에만 객체가 존재해야하며, 다른 한 곳은 비워져 있어야 함.<br> 보통 From, To로 구분하며 객체가 존재하는 영역(From)이 가득차면 다른영역(To)로 보내고, 기존의 영역(From)을 비우는 작업을 진행<br>
-![survivor1->survivor2로 이동](https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/images/gcslides/Slide8.png)
-![survivor2가 꽉차면 survivor1로 이동](https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/images/gcslides/Slide9.png)
+![image](/java-spring/img/JAVA-SPRING-garbage_collection_process_6.PNG)<br>
+![image](/java-spring/img/JAVA-SPRING-garbage_collection_process_7.PNG)<br>
 5. 1~3의 과정을 반복하면서 Survivor 영역에서 계속 살아남은 객체들의 한계치가 초과되면 Old Generation 영역으로 이동하게 됨
-![image](https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/images/gcslides/Slide7.png)
+![image](/java-spring/img/JAVA-SPRING-garbage_collection_process_8.PNG)<br>
 6. Old Generation 영역에서 살아남았던 객체들이 어느정도 쌓이게 되면, 미사용으로 판단된 객체들을 제거하는 Major GC(Full Gc)가 발생하고, 이 과정에서 **Stop the World**가 발생하게 됨
 
 
